@@ -1,0 +1,30 @@
+[versions]
+agp = "8.10.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.6.1"
+material = "1.10.0"
+activity = "1.10.1"
+constraintlayout = "2.1.4"
+playServicesLocation = "21.3.0"
+media3Common = "1.7.1"
+engageCore = "1.5.8"
+impress = "0.0.3"
+
+[libraries]
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
+engage-core = { group = "com.google.android.engage", name = "engage-core", version.ref = "engageCore" }
+impress = { group = "com.google.ar", name = "impress", version.ref = "impress" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+
