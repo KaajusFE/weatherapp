@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.media3.common)
     implementation(libs.engage.core)
     implementation(libs.impress)
+    implementation(libs.firebase.crashlytics.buildtools)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

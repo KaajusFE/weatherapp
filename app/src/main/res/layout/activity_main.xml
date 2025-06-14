@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="25dp"
         android:layout_marginBottom="10dp"
         android:fontFamily="sans-serif"
         android:text="25°"
@@ -192,7 +192,7 @@
         android:layout_marginTop="7dp"
         android:backgroundTint="#2B3A67"
         android:fontFamily="sans-serif"
-        android:text="Change City"
+        android:text="Search"
         android:textColor="@color/white"
         android:textSize="20sp" />
 
@@ -218,8 +218,10 @@
         android:layout_marginBottom="10dp"
         android:layout_marginTop="650dp"
         android:backgroundTint="@color/black"
-        android:text="Favorites"
+        android:text="Favorite Cities"
         android:textColor="@color/white"
+        android:fontFamily="sans-serif"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />

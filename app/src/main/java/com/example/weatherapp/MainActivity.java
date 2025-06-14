@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 
 import com.google.android.gms.location.LocationServices;
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
                     FetchWeatherData(DEFAULT_CITY);
                 }
             });
+
+    @UnstableApi
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
         buttonGoToFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an Intent to start FavoritesActivity
                 Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
                 startActivity(intent);
             }
@@ -108,8 +110,41 @@ public class MainActivity extends AppCompatActivity {
 
         favoriteStarIcon.setOnClickListener(v -> toggleFavoriteStatus());
         checkLocationPermissionAndFetchInitialWeather();
+        handleIntent(getIntent());
 
+    }
 
+    @UnstableApi
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    @UnstableApi
+    private void handleIntent(Intent intent) {
+        if (intent != null && intent.hasExtra(FavoritesActivity.EXTRA_CITY_NAME_FROM_FAVORITES)) {
+            String cityNameToFetch = intent.getStringExtra(FavoritesActivity.EXTRA_CITY_NAME_FROM_FAVORITES);
+            intent.removeExtra(FavoritesActivity.EXTRA_CITY_NAME_FROM_FAVORITES);
+
+            if (!com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.util.TextUtils.isEmpty(cityNameToFetch)) {
+                Log.d("MainActivity", "Received city from Favorites: " + cityNameToFetch);
+                cityNameInput.setText(cityNameToFetch);
+                FetchWeatherData(cityNameToFetch);
+            } else {
+                Log.w("MainActivity", "Received empty city name from Favorites.");
+
+                checkLocationPermissionAndFetchInitialWeather();
+            }
+        } else {
+            Log.d("MainActivity", "No city from Favorites in intent, doing normal startup.");
+            if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_MAIN)) {
+                checkLocationPermissionAndFetchInitialWeather();
+            } else if (getIntent().getAction() == null) {
+                checkLocationPermissionAndFetchInitialWeather();
+            }
+        }
     }
 
 
@@ -247,11 +282,9 @@ public class MainActivity extends AppCompatActivity {
         boolean isFavorite = checkIsFavorite(currentCityNameForFavorite);
 
         if (isFavorite) {
-            // It was a favorite, so remove it
             editor.remove(FAVORITE_PREFIX + currentCityNameForFavorite);
             Toast.makeText(this, currentCityNameForFavorite + " removed from favorites", Toast.LENGTH_SHORT).show();
         } else {
-            // It was not a favorite, so add it
             editor.putBoolean(FAVORITE_PREFIX + currentCityNameForFavorite, true);
             Toast.makeText(this, currentCityNameForFavorite + " added to favorites", Toast.LENGTH_SHORT).show();
         }

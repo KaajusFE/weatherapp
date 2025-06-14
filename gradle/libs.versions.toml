@@ -11,6 +11,7 @@ playServicesLocation = "21.3.0"
 media3Common = "1.7.1"
 engageCore = "1.5.8"
 impress = "0.0.3"
+firebaseCrashlyticsBuildtools = "3.0.4"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -24,6 +25,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
 engage-core = { group = "com.google.android.engage", name = "engage-core", version.ref = "engageCore" }
 impress = { group = "com.google.ar", name = "impress", version.ref = "impress" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

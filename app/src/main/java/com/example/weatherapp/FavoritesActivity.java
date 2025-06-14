@@ -1,13 +1,14 @@
-package com.example.weatherapp; // Ensure this matches your package name
+package com.example.weatherapp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,21 +18,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-// Implement the adapter's click listener interface
+
 public class FavoritesActivity extends AppCompatActivity implements FavoriteCityAdapter.OnItemClickListener {
 
     private RecyclerView recyclerViewFavorites;
     private FavoriteCityAdapter adapter;
     private ArrayList<String> favoriteCitiesList;
     private TextView textViewNoFavorites;
+    private Button buttonBackToMain;
 
-    // --- IMPORTANT: Define SharedPreferences constants CONSISTENTLY ---
-    // These MUST match the constants used in MainActivity for saving favorites.
-    // It's best to define these in a shared constants file or make them public static in MainActivity.
-    public static final String PREFS_NAME = "FavoriteCitiesPrefs"; // Example name
-    public static final String FAVORITE_PREFIX = "favorite_";   // Example prefix
-    // ---
 
+    public static final String PREFS_NAME = "FavoriteCitiesPrefs";
+    public static final String FAVORITE_PREFIX = "favorite_";
+    public static final String EXTRA_CITY_NAME_FROM_FAVORITES = "com.example.weatherapp.CITY_NAME_FROM_FAVORITES";
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,21 +45,20 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteCity
         recyclerViewFavorites = findViewById(R.id.recyclerViewFavorites);
         textViewNoFavorites = findViewById(R.id.textViewNoFavorites);
         favoriteCitiesList = new ArrayList<>();
+        buttonBackToMain = findViewById(R.id.buttonBackToMain);
 
         setupRecyclerView();
-        // loadFavoriteCities(); // Will be called in onResume
     }
 
     private void setupRecyclerView() {
         recyclerViewFavorites.setLayoutManager(new LinearLayoutManager(this));
-        // Pass 'this' as the OnItemClickListener because FavoritesActivity implements it
         adapter = new FavoriteCityAdapter(this, favoriteCitiesList, this);
         recyclerViewFavorites.setAdapter(adapter);
     }
 
     private void loadFavoriteCities() {
         Log.d("FavoritesActivity", "Loading favorite cities...");
-        favoriteCitiesList.clear(); // Clear the list before reloading
+        favoriteCitiesList.clear();
 
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         Map<String, ?> allEntries = prefs.getAll();
@@ -75,12 +73,12 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteCity
         for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
             Log.d("FavoritesActivity", "Checking entry: " + entry.getKey() + " = " + entry.getValue());
             if (entry.getKey().startsWith(FAVORITE_PREFIX)) {
-                // Ensure the value is a Boolean and is true
+
                 if (entry.getValue() instanceof Boolean && (Boolean) entry.getValue()) {
                     String cityNameWithPrefix = entry.getKey();
                     String cityName = cityNameWithPrefix.substring(FAVORITE_PREFIX.length());
 
-                    // Optional: Format the city name (e.g., capitalize first letter)
+
                     if (!cityName.isEmpty()) {
                         cityName = cityName.substring(0, 1).toUpperCase() + cityName.substring(1).toLowerCase();
                     }
@@ -91,11 +89,22 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteCity
                 }
             }
         }
+        buttonBackToMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-        Collections.sort(favoriteCitiesList); // Optional: Sort alphabetically
+                Intent intent = new Intent(FavoritesActivity.this, MainActivity.class);
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        Collections.sort(favoriteCitiesList);
 
         updateUIBasedOnFavorites();
-        adapter.notifyDataSetChanged(); // Notify the adapter about the new data
+        adapter.notifyDataSetChanged();
         Log.d("FavoritesActivity", "Favorite cities loaded. Count: " + favoriteCitiesList.size());
     }
 
@@ -111,21 +120,23 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteCity
         }
     }
 
-    // --- Implementation of FavoriteCityAdapter.OnItemClickListener ---
+
     @Override
     public void onItemClick(String cityName) {
-        // Handle item click here.
-        // For example, you could open MainActivity and pass the city name to display its weather.
-        Toast.makeText(this, "Clicked: " + cityName, Toast.LENGTH_SHORT).show();
+        Log.d("FavoritesActivity", "Clicked favorite city: " + cityName);
 
-        // Example: Navigate back to MainActivity and tell it to search for this city
-        // Intent intent = new Intent(this, MainActivity.class);
-        // intent.putExtra("SEARCH_CITY_FROM_FAVORITES", cityName); // Use a unique key
-        // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP); // Clears other activities on top and brings MainActivity to front or creates new
-        // startActivity(intent);
-        // finish(); // Optional: finish FavoritesActivity after navigating
+
+        Intent intent = new Intent(this, MainActivity.class);
+
+
+        intent.putExtra(EXTRA_CITY_NAME_FROM_FAVORITES, cityName);
+
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        startActivity(intent);
+        finish();
     }
-    // ---
 
     @Override
     public boolean onSupportNavigateUp() {
@@ -136,9 +147,6 @@ public class FavoritesActivity extends AppCompatActivity implements FavoriteCity
     @Override
     protected void onResume() {
         super.onResume();
-        // Load or refresh the list every time the activity is resumed
-        // This ensures that if favorites are changed in MainActivity and the user returns,
-        // the list here is up-to-date.
         loadFavoriteCities();
     }
 }
