@@ -1,7 +1,9 @@
 package com.example.weatherapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String API_KEY = "e4c23158ebedad33bf396578161b6123";
     private static final String DEFAULT_CITY = "Warsaw";
     private com.google.android.gms.location.FusedLocationProviderClient fusedLocationClient;
+    private Button buttonGoToFavorites;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                     FetchWeatherData(DEFAULT_CITY);
                 }
             });
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +87,16 @@ public class MainActivity extends AppCompatActivity {
         favoriteStarIcon = findViewById(R.id.favoriteStarIcon);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        buttonGoToFavorites = findViewById(R.id.buttonGoToFavorites);
 
+        buttonGoToFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start FavoritesActivity
+                Intent intent = new Intent(MainActivity.this, FavoritesActivity.class);
+                startActivity(intent);
+            }
+        });
         refreshButton.setOnClickListener(v -> {
             String cityName = cityNameInput.getText().toString();
             if (!cityName.isEmpty()) {
@@ -95,7 +108,10 @@ public class MainActivity extends AppCompatActivity {
 
         favoriteStarIcon.setOnClickListener(v -> toggleFavoriteStatus());
         checkLocationPermissionAndFetchInitialWeather();
+
+
     }
+
 
     private void checkLocationPermissionAndFetchInitialWeather() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -310,4 +326,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }
